@@ -1,3 +1,5 @@
+import json
+import logging
 from google import genai
 from google.genai import types
 
@@ -6,6 +8,8 @@ from app.models.evaluation import (
     PerformanceResult,
     ResponsibilityResult
 )
+
+logger = logging.getLogger(__name__)
 
 
 class GeminiService:
@@ -134,3 +138,41 @@ AI RESPONSE:
         return ResponsibilityResult.model_validate_json(
             result.text
         )
+
+    async def call_gemini(
+        self,
+        prompt: str,
+        response_type: str = "json"
+    ):
+        """
+        Generic method for calling Gemini with structured JSON responses.
+
+        Args:
+            prompt: The prompt to send to Gemini
+            response_type: Type of response - "json" or "json_array"
+
+        Returns:
+            Parsed JSON response, or None on error
+        """
+        try:
+            result = self.client.models.generate_content(
+                model=self.model,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json"
+                )
+            )
+
+            if not result or not result.text:
+                logger.error("Empty response from Gemini")
+                return None
+
+            parsed = json.loads(result.text)
+            return parsed
+
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse Gemini JSON response: {str(e)}")
+            return None
+        except Exception as e:
+            logger.error(f"Error calling Gemini: {str(e)}")
+            return None

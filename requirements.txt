@@ -4,3 +4,6 @@ google-genai
 pydantic
 pydantic-settings
 python-dotenv
+aiohttp
+pytest
+pytest-asyncio

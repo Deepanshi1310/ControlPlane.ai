@@ -1,13 +1,9 @@
-from fastapi import APIRouter, Depends
-
+from fastapi import APIRouter
 from app.models.evaluation import (
     EvaluationRequest,
     EvaluationResponse
 )
-
-from app.services.gemini_service import GeminiService
 from app.services.controlplane_service import ControlPlaneService
-
 
 router = APIRouter(
     prefix="/api/v1/evaluation",
@@ -21,11 +17,7 @@ router = APIRouter(
 )
 async def evaluate(request: EvaluationRequest):
 
-    gemini_service = GeminiService()
-
-    controlplane = ControlPlaneService(
-        gemini_service
-    )
+    controlplane = ControlPlaneService()
 
     result = await controlplane.evaluate(
         request
