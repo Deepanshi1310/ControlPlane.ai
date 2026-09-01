@@ -15,17 +15,26 @@ Evaluates an AI model's response across multiple dimensions:
 
 ```json
 {
-  "request_id": "string (required)",
   "query": "string (required) - User's original query",
   "response": "string (required) - AI model's response to evaluate",
-  "model": "string (required) - Name of the AI model",
+  "request_id": "string (optional) - Unique ID; auto-generated if omitted",
+  "model": "string (optional, default: 'gemini-2.5-flash')",
   "input_tokens": "integer (optional, default: 0)",
   "output_tokens": "integer (optional, default: 0)",
-  "total_tokens": "integer (optional) - Calculated if not provided",
-  "latency_ms": "float (optional, default: 0)",
+  "total_tokens": "integer (optional, default: 0)",
+  "latency_ms": "float (optional, default: 0.0)",
   "tool_calls": "integer (optional, default: 0)",
-  "context": "string (optional) - Additional trusted context for evaluation",
-  "expected_cost": "float (optional) - Expected cost for anomaly detection"
+  "context": "string (optional, default: null)",
+  "expected_cost": "float (optional, default: null)"
+}
+```
+
+### Minimal Request Example
+
+```json
+{
+  "query": "Who founded Microsoft?",
+  "response": "Microsoft was founded by Bill Gates and Paul Allen on April 4, 1975."
 }
 ```
 
@@ -34,6 +43,34 @@ Evaluates an AI model's response across multiple dimensions:
 ```json
 {
   "request_id": "string",
+  "decision": {
+    "risk_level": "LOW|MEDIUM|HIGH|CRITICAL",
+    "action": "ALLOW|EDIT|REDACT|BLOCK|HUMAN_REVIEW",
+    "reason": "string - Human-readable explanation with markdown source link",
+    "source_of_truth": "Wikipedia",
+    "supporting_url": "string | null - Direct Wikipedia URL for primary evidence",
+    "supporting_evidence": "string | null - Excerpt from Wikipedia article",
+    "sources_of_truth": [
+      {
+        "title": "string - Wikipedia article title",
+        "url": "string - Clickable Wikipedia URL",
+        "snippet": "string - Verifying excerpt from Wikipedia",
+        "status": "SUPPORTED|CONTRADICTED|INSUFFICIENT_EVIDENCE",
+        "claim": "string - Specific claim extracted from response",
+        "confidence": "float [0-1]"
+      }
+    ]
+  },
+  "sources_of_truth": [
+    {
+      "title": "string",
+      "url": "string",
+      "snippet": "string",
+      "status": "SUPPORTED|CONTRADICTED|INSUFFICIENT_EVIDENCE",
+      "claim": "string",
+      "confidence": "float [0-1]"
+    }
+  ],
   "performance": {
     "relevance": "float [0-1]",
     "factuality": "float [0-1]",
@@ -41,16 +78,16 @@ Evaluates an AI model's response across multiple dimensions:
     "clarity": "float [0-1]",
     "quality_score": "float [0-1]",
     "confidence": "float [0-1]",
-    "risk": "LOW|MEDIUM|HIGH|CRITICAL",
+    "risk": "LOW|MEDIUM|HIGH",
     "latency_ms": "float",
     "factual_verification": {
       "verified_claims": [
         {
           "claim": "string",
           "status": "SUPPORTED|CONTRADICTED|INSUFFICIENT_EVIDENCE",
-          "evidence": "string",
-          "wikipedia_title": "string",
-          "wikipedia_url": "string",
+          "evidence": "string | null",
+          "wikipedia_title": "string | null",
+          "wikipedia_url": "string | null",
           "confidence": "float [0-1]"
         }
       ],
@@ -80,11 +117,6 @@ Evaluates an AI model's response across multiple dimensions:
     "policy_violation": "boolean",
     "policy_issues": ["string"],
     "risk": "LOW|MEDIUM|HIGH"
-  },
-  "decision": {
-    "risk_level": "LOW|MEDIUM|HIGH|CRITICAL",
-    "action": "ALLOW|EDIT|REDACT|BLOCK|HUMAN_REVIEW",
-    "reason": "string"
   }
 }
 ```

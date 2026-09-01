@@ -109,12 +109,13 @@ class DecisionService:
                 "sources_of_truth": sources_of_truth
             }
 
-        # 5. Critical factuality failure / contradiction
-        if performance.factuality < 0.40:
+        # 5. Critical factuality failure or contradicted claims
+        has_contradicted = any(getattr(s, "status", "") == "CONTRADICTED" for s in sources_of_truth)
+        if performance.factuality < 0.60 or performance.risk == "HIGH" or has_contradicted:
             return {
                 "risk_level": "HIGH",
                 "action": "HUMAN_REVIEW",
-                "reason": f"Factuality check failed against Wikipedia source{source_cite}. Claims may be contradicted or unverified.",
+                "reason": f"Factuality or quality check flagged issues against Wikipedia source{source_cite}. Claims may be contradicted or unverified.",
                 "source_of_truth": "Wikipedia",
                 "supporting_url": primary_url,
                 "supporting_evidence": primary_evidence,

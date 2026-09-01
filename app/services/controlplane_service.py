@@ -34,7 +34,8 @@ class ControlPlaneService:
         # -----------------------------
 
         fact_verification = await self.fact_verification_service.verify_response(
-            response=request.response
+            response=request.response,
+            query=request.query
         )
 
         logger.info(

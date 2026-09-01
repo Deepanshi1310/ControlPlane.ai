@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "ControlPlane.ai Verifier",
+  "version": "1.0.0",
+  "description": "Real-time AI factual verification and oversight layer using Wikipedia Source of Truth.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "ControlPlane AI Verifier"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://localhost:8000/*",
+    "http://127.0.0.1:8000/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "content/generic.js",
+        "content/chatgpt.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

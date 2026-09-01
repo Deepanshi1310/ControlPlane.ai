@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ControlPlane AI Verifier</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-text">
+          <h1>ControlPlane<span>.ai</span></h1>
+          <p class="subtitle">Wikipedia Fact Verification</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="nav-pills">
+          <button id="tab-verify" class="nav-pill active">Verify</button>
+          <button id="tab-history" class="nav-pill">History</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Auto-detection Banner -->
+    <div id="detected-banner" class="detected-banner hidden">
+      <span class="detected-icon">✨</span>
+      <span id="detected-text">Auto-detected from ChatGPT</span>
+      <button id="dismiss-detection-btn" class="dismiss-btn" title="Dismiss">✕</button>
+    </div>
+
+    <!-- Verify Tab View -->
+    <div id="verify-view" class="tab-view">
+      <!-- Input Form -->
+      <main class="form-container">
+        <div class="form-group">
+          <label for="query-input">
+            <span>Query / Question</span>
+          </label>
+          <input 
+            type="text" 
+            id="query-input" 
+            placeholder="e.g. Who founded Microsoft?"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="form-group">
+          <div class="label-row">
+            <label for="response-input">AI Response to Verify</label>
+            <button id="get-selection-btn" class="text-btn" title="Refresh highlighted text from webpage">
+              <span>⟳ Grab Selection</span>
+            </button>
+          </div>
+          <textarea 
+            id="response-input" 
+            rows="4" 
+            placeholder="Highlight text on the page or paste an AI response here..."
+          ></textarea>
+          <div id="selection-hint" class="hint-text">
+            💡 Select text on any webpage and open this extension.
+          </div>
+        </div>
+
+        <button id="verify-btn" class="primary-btn">
+          <span class="btn-text">VERIFY FACTS</span>
+          <span class="btn-icon">→</span>
+        </button>
+      </main>
+
+      <!-- Loading State -->
+      <div id="loading-container" class="loading-container hidden">
+        <div class="spinner"></div>
+        <p class="loading-title">Verifying against Wikipedia...</p>
+        <p class="loading-sub">Searching articles, matching claims & checking evidence</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="error-container" class="error-container hidden">
+        <div class="error-icon">⚠️</div>
+        <p id="error-message" class="error-message">Unable to connect to backend server.</p>
+        <button id="error-retry-btn" class="secondary-btn">Retry</button>
+      </div>
+
+      <!-- Results Section -->
+      <section id="results-container" class="results-container hidden">
+        <!-- Decision Banner -->
+        <div id="decision-card" class="decision-card">
+          <div class="decision-header">
+            <div class="badge-group">
+              <span id="decision-action" class="badge badge-action">ALLOW</span>
+              <span id="decision-risk" class="badge badge-risk">LOW RISK</span>
+            </div>
+            <div class="score-display">
+              <span class="score-num" id="factuality-percentage">100%</span>
+              <span class="score-sub">Factuality</span>
+            </div>
+          </div>
+          <p id="decision-reason" class="decision-reason">
+            Response passed all checks. Factually supported by Wikipedia.
+          </p>
+        </div>
+
+        <!-- Quick Metrics -->
+        <div class="metrics-grid">
+          <div class="metric-box">
+            <span class="metric-label">Claims</span>
+            <span id="metric-claims-count" class="metric-value">0</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Supported</span>
+            <span id="metric-supported-count" class="metric-value text-success">0</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Contradicted</span>
+            <span id="metric-contradicted-count" class="metric-value text-danger">0</span>
+          </div>
+          <div class="metric-box">
+            <span class="metric-label">Unverified</span>
+            <span id="metric-unverified-count" class="metric-value text-muted">0</span>
+          </div>
+        </div>
+
+        <!-- Claims Header & Actions -->
+        <div class="section-header-row">
+          <span class="section-title">Verified Claims & Sources</span>
+          <button id="copy-report-btn" class="text-btn" title="Copy verification summary to clipboard">
+            <span>📋 Copy Report</span>
+          </button>
+        </div>
+
+        <div id="claims-list" class="claims-list">
+          <!-- Claim cards dynamically inserted here -->
+        </div>
+      </section>
+    </div>
+
+    <!-- History Tab View -->
+    <div id="history-view" class="tab-view hidden">
+      <div class="history-header">
+        <span class="section-title">Recent Verifications</span>
+        <button id="clear-history-btn" class="text-btn text-danger">Clear</button>
+      </div>
+      <div id="history-list" class="history-list">
+        <!-- History items dynamically inserted here -->
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <span>ControlPlane.ai • Ground Truth via Wikipedia</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
